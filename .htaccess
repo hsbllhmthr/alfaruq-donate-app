@@ -27,11 +27,13 @@ RewriteEngine On
     Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
-# --- Redirect HTTP ke HTTPS ---
+# --- Redirect HTTP ke HTTPS (Aman untuk Nginx Reverse Proxy) ---
 <IfModule mod_rewrite.c>
+    RewriteCond %{HTTP:X-Forwarded-Proto} =http
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
+
 
 # --- Cache Static Assets ---
 <IfModule mod_expires.c>
