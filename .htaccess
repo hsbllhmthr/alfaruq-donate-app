@@ -4,7 +4,9 @@
 
 # Aktifkan RewriteEngine
 Options -Indexes
+DirectoryIndex index.html index.php login.php
 RewriteEngine On
+
 
 # --- Blokir Akses ke File Sensitif ---
 # Blokir check_db.php dan migrate.php dari akses publik
