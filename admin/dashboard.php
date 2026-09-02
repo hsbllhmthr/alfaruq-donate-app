@@ -1,5 +1,7 @@
 <?php
+ob_start();
 session_start();
+
 
 // Proteksi Session Admin
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {

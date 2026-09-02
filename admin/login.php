@@ -1,6 +1,8 @@
 <?php
+ob_start();
 session_start();
 require_once __DIR__ . '/../db-connect.php';
+
 
 // Jika sudah login, langsung ke dashboard
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
