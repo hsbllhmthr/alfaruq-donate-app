@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instruksi Pembayaran</title>
+    <meta name="description" content="Selesaikan pembayaran donasi Anda dengan memindai kode QRIS BSI atau transfer bank ke rekening Yayasan Alfaruq.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container payment-instruction-page">
+        
+        <header class="detail-header">
+            <a href="donation.html" class="back-btn" aria-label="Kembali ke Data Diri">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </a>
+            <h1>Instruksi Pembayaran</h1>
+        </header>
+
+        <main class="detail-content content-padding">
+            
+            <section class="qr-section">
+                <div class="qr-header">
+                    <h2 class="qr-title">Scan QR Code</h2>
+                    <img class="payment-logo" src="img/bsi.png" alt="Logo Metode Pembayaran" width="112" height="31">
+                </div>
+                <div class="qr-container">
+                    <img class="qr-image" src="img/qris-masjid.png" alt="QR Code Pembayaran" width="322" height="320">
+                </div>
+            </section>
+
+            <section class="payment-details-section">
+                <div class="detail-row">
+                    <span class="detail-label">Nomor Rekening</span>
+                    <span class="detail-value value-bold">7307974198</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Nama Rekening</span>
+                    <span class="detail-value value-bold">MASJID AL FARUQ</span>
+                </div>
+                <div class="detail-row total-row">
+                    <span class="detail-label label-large">Total donasi</span>
+                    <span class="detail-value value-large" id="totalAmountDisplay">Memuat...</span>
+                </div>
+            </section>
+
+            <div class="action-group">
+                <a href="https://wa.me/6282114469001" target="_blank" class="donate-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Konfirmasi Pembayaran</a>
+            </div>
+
+            <section class="guide-section">
+                <h3 class="guide-title">Panduan Pembayaran</h3>
+                <ol class="guide-list">
+                    <li>Scan atau screenshot QR Code yang tampil.</li>
+                    <li>Buka aplikasi bank/dompet digital (Gojek, OVO, Dana, Gopya, dll).</li>
+                    <li>Kemudian pilih ‘Pay’ atau ‘Scan’.</li>
+                    <li>Upload tangkapan layar (hasil screenshot) QR Code.</li>
+                    <li>Masukkan kode PIN dompet digitalmu.</li>
+                    <li>Jika pembayaran telah selesai dan berhasil, akan ada notif.</li>
+                    <li>Konfirmasi pembayaran melalui whatsapp.</li>
+                </ol>
+            </section>
+
+        <div class="action-group-secondary">
+            <a href="index.html" class="btn-outline">Donasi ke penggalangan lain</a>
+        </div>
+
+        </main>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const amount = sessionStorage.getItem('donation_amount');
+            const totalDisplay = document.getElementById('totalAmountDisplay');
+            if (amount && totalDisplay) {
+                totalDisplay.textContent = 'Rp' + formatRupiah(amount);
+            } else if (totalDisplay) {
+                totalDisplay.textContent = 'Rp0';
+            }
+
+            // Konfigurasi dinamis teks WhatsApp Konfirmasi
+            const lastDonationJson = sessionStorage.getItem('last_donation');
+            const waBtn = document.querySelector('.donate-btn[href^="https://wa.me"]');
+            if (waBtn) {
+                let name = 'Hamba Allah';
+                let campaignName = 'Pembangunan Masjid';
+
+                const campaignId = sessionStorage.getItem('campaign_id');
+                if (campaignId === 'wakaf') {
+                    campaignName = 'Wakaf Al-Qur\'an';
+                }
+
+                if (lastDonationJson) {
+                    try {
+                        const donation = JSON.parse(lastDonationJson);
+                        name = donation.name || 'Hamba Allah';
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+
+                const amountFormatted = amount ? formatRupiah(amount) : '0';
+                const textMessage = `Assalamu'alaikum Admin Alfaruq,\nSaya ingin melakukan konfirmasi donasi.\n\n*Detail Donasi:*\n- Program: ${campaignName}\n- Nama Donatur: ${name}\n- Nominal: Rp${amountFormatted}\n\nTerima kasih.`;
+                waBtn.href = `https://wa.me/6282114469001?text=${encodeURIComponent(textMessage)}`;
+            }
+        });
+
+        // Helper untuk memformat ke rupiah
+        function formatRupiah(angka) {
+            let numberString = angka.toString();
+            let sisa = numberString.length % 3;
+            let rupiah = numberString.substr(0, sisa);
+            let ribuan = numberString.substr(sisa).match(/\d{3}/g);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+            return rupiah;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Nominal Donasi</title>
+    <meta name="description" content="Pilih atau masukkan nominal donasi terbaik Anda untuk mendukung pembangunan sarana ibadah dan wakaf Alfaruq.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container donation-amount-page">
+        <header class="detail-header">
+            <a href="detail.html" class="back-btn" aria-label="Kembali ke Detail">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </a>
+            <h1>Pembangunan Masjid dan Pondok Pesantren...</h1>
+        </header>
+
+        <main class="detail-content content-padding">
+            
+            <section class="nominal-section">
+                <h2 class="section-title text-center">Masukkan Nominal Donasi</h2>
+                
+                <div class="nominal-grid">
+                    <label class="nominal-card">
+                        <input type="radio" name="nominal" value="10000" class="nominal-radio">
+                        <div class="nominal-card-content">
+                            <span class="amount-text">Rp10.000</span>
+                            <div class="chevron-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="nominal-card">
+                        <input type="radio" name="nominal" value="50000" class="nominal-radio">
+                        <div class="nominal-card-content">
+                            <span class="amount-text">Rp50.000</span>
+                            <div class="chevron-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="nominal-card">
+                        <input type="radio" name="nominal" value="100000" class="nominal-radio">
+                        <div class="nominal-card-content">
+                            <span class="amount-text">Rp100.000</span>
+                            <div class="chevron-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="nominal-card">
+                        <input type="radio" name="nominal" value="500000" class="nominal-radio">
+                        <div class="nominal-card-content">
+                            <span class="amount-text">Rp500.000</span>
+                            <div class="chevron-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <section class="custom-nominal-section">
+                <h2 class="section-title text-center">Masukkan Nominal Lainnya</h2>
+                <div class="input-custom-group">
+                    <span class="currency-prefix">Rp</span>
+                    <input type="text" id="custom-amount" placeholder="0" class="custom-amount-input">
+                </div>
+                <p class="donation-notice">
+                    Bantu para penerima manfaat dengan donasi minimal <strong>Rp10.000</strong>
+                </p>
+            </section>
+
+        </main>
+
+        <footer class="detail-footer">
+            <a href="donation.html" class="donate-btn">Lanjutkan Pembayaran</a>
+        </footer>
+    </div>
+    <script>
+        const customInput = document.getElementById('custom-amount');
+        const nominalRadios = document.querySelectorAll('input[name="nominal"]');
+        const donateBtn = document.querySelector('.donate-btn');
+
+        // Event listener untuk radio button (pilihan nominal instan)
+        nominalRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    customInput.value = ''; // Kosongkan input manual jika memilih opsi cepat
+                    sessionStorage.setItem('donation_amount', this.value);
+                }
+            });
+        });
+
+        // Event listener untuk input manual nominal lainnya
+        customInput.addEventListener('input', function (e) {
+            let value = this.value.replace(/[^0-9]/g, '');
+            
+            if (value) {
+                this.value = formatRupiah(value);
+                // Uncheck semua pilihan cepat
+                nominalRadios.forEach(radio => radio.checked = false);
+                sessionStorage.setItem('donation_amount', value);
+            } else {
+                this.value = '';
+                sessionStorage.removeItem('donation_amount');
+            }
+        });
+
+        // Validasi saat tombol pembayaran diklik
+        donateBtn.addEventListener('click', function(e) {
+            const savedAmount = sessionStorage.getItem('donation_amount');
+            if (!savedAmount || parseInt(savedAmount) < 10000) {
+                e.preventDefault();
+                alert('Bantu para penerima manfaat dengan donasi minimal Rp10.000');
+            }
+        });
+
+        // Helper untuk memformat ke rupiah
+        function formatRupiah(angka) {
+            let numberString = angka.toString();
+            let sisa = numberString.length % 3;
+            let rupiah = numberString.substr(0, sisa);
+            let ribuan = numberString.substr(sisa).match(/\d{3}/g);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+            return rupiah;
+        }
+
+        // Cek jika sudah ada nominal tersimpan sebelumnya
+        window.addEventListener('DOMContentLoaded', () => {
+            const campaignId = sessionStorage.getItem('campaign_id') || 'masjid';
+            const backBtn = document.querySelector('.back-btn');
+            if (backBtn) {
+                backBtn.href = `detail.html?id=${campaignId}`;
+            }
+            const headerTitle = document.querySelector('.detail-header h1');
+            if (headerTitle) {
+                if (campaignId === 'wakaf') {
+                    headerTitle.textContent = "Wakaf alquran, iqra, dirosa, & perlengkapan...";
+                } else {
+                    headerTitle.textContent = "Pembangunan Masjid dan Pondok Pesantren...";
+                }
+            }
+
+            const savedAmount = sessionStorage.getItem('donation_amount');
+            if (savedAmount) {
+                let matched = false;
+                nominalRadios.forEach(radio => {
+                    if (radio.value === savedAmount) {
+                        radio.checked = true;
+                        matched = true;
+                    }
+                });
+                if (!matched) {
+                    customInput.value = formatRupiah(savedAmount);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

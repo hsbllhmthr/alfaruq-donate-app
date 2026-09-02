@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate - Ayo Bantu Sesama</title>
+    <meta name="description" content="Salurkan donasi terbaik Anda untuk pembangunan masjid, pesantren, dan program wakaf Al-Qur'an melalui platform donasi Alfaruq Pengawal Peradaban.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-nav">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Coba cari “Tolong menolong”">
+                <div class="search-icon">
+                    <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="6.41667" cy="6.88" r="5" stroke="#666666" stroke-width="2"/>
+                        <path d="M10.72 11.41L12.25 12.94" stroke="#666666" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-wrapper">
+            <section class="search-section">
+            <!-- Mengubah banner menjadi slider container -->
+            <div class="hero-banner-slider">
+                <div class="hero-banner-track" id="bannerTrack">
+                    <img src="img/masjid.jpg" alt="Hero Banner 1" fetchpriority="high">
+                    <img src="img/wakaf.jpg" alt="Hero Banner 2"> <!-- Gambar Kedua -->
+                </div>
+                
+                <!-- Indikator titik (Dots) di bawah banner -->
+                <div class="slider-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        </section>
+
+            <section class="urgent-section">
+                <h2>Penggalangan Dana</h2>
+                <div class="grid-container">
+                    <button class="circle-btn prev-btn hidden" id="prevBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    
+                    <div class="fundraiser-grid" id="fundraiserGrid">
+                        <a href="detail.html?id=masjid" style="text-decoration: none; color: inherit;">
+                            <article class="fundraiser-card">
+                                <img src="img/thumb-masjid.jpg" alt="Masjid">
+                                <div class="card-content">
+                                    <p class="organization">Alfaruq Pengawal Peradaban</p>
+                                    <h3>Pembangunan Masjid dan Pondok Pesantren</h3>
+                                    <div class="progress-container">
+                                        <div class="progress-bar" style="width: 0%;"></div>
+                                    </div>
+                                    <div class="stats">
+                                        <span class="label">Terkumpul</span>
+                                        <span class="amount">Rp.0</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </a>
+                        
+                        <a href="detail.html?id=wakaf" style="text-decoration: none; color: inherit;">
+                            <article class="fundraiser-card">
+                                <img src="img/thumb-wakaf.jpg" alt="Masjid">
+                                <div class="card-content">
+                                    <p class="organization">Alfaruq Pengawal Peradaban</p>
+                                    <h3>Wakaf alquran, iqra, dirosa, & perlengkapan belajar santri dhuafa</h3>
+                                    <div class="progress-container">
+                                        <div class="progress-bar" style="width: 0%;"></div>
+                                    </div>
+                                    <div class="stats">
+                                        <span class="label">Terkumpul</span>
+                                        <span class="amount">Rp.0</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </a>
+                    </div>
+
+                    <button class="circle-btn next-btn" id="nextBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <div class="footer-note">Tentang Donasi Alfaruq</div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <i data-lucide="heart"></i>
+                <span>Donasi</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="plus-circle"></i>
+                <span>Galang Dana</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="wallet"></i>
+                <span>Donasi Saya</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="mail"></i>
+                <span>Inbox</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="user"></i>
+                <span>Akun</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Toast "Fitur ini akan segera tiba" -->
+    <div id="comingSoonToast" class="coming-soon-toast">
+        <i data-lucide="info" class="toast-icon"></i>
+        <span>Fitur ini akan segera tiba!</span>
+    </div>
+
+    <script>
+        const fundraiserGrid = document.getElementById('fundraiserGrid');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+
+        const scrollAmount = 240; 
+
+        // Fungsi untuk memperbarui visibilitas tombol
+        function updateButtons() {
+            const scrollLeft = fundraiserGrid.scrollLeft;
+            const maxScroll = fundraiserGrid.scrollWidth - fundraiserGrid.clientWidth;
+
+            // Sembunyikan/Tampilkan prevBtn
+            if (scrollLeft <= 5) { 
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+
+            // Sembunyikan/Tampilkan nextBtn
+            if (scrollLeft >= maxScroll - 5) {
+                nextBtn.classList.add('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            fundraiserGrid.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+
+        prevBtn.addEventListener('click', () => {
+            fundraiserGrid.scrollBy({
+                left: -scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+
+        // Pantau event scroll untuk memperbarui tombol secara real-time
+        fundraiserGrid.addEventListener('scroll', updateButtons);
+        
+        // Jalankan pengecekan awal
+        updateButtons();
+
+        // Inisialisasi Lucide Icons
+        lucide.createIcons();
+
+        const bannerTrack = document.getElementById('bannerTrack');
+        const dots = document.querySelectorAll('.dot');
+        let currentSlide = 0;
+
+        function changeSlide() {
+            // Berganti antara slide 0 dan slide 1
+            currentSlide = currentSlide === 0 ? 1 : 0;
+            
+            // Geser track banner (0% untuk gambar pertama, -50% untuk gambar kedua)
+            bannerTrack.style.transform = `translateX(-${currentSlide * 50}%)`;
+            
+            // Perbarui status aktif pada dot indikator
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Jalankan transisi otomatis setiap 4 detik (4000ms)
+        setInterval(changeSlide, 4000);
+
+        // Opsional: Membuat titik (dots) bisa di-klik manual untuk ganti gambar
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index === 0 ? 1 : 0; // trigger kebalikan agar fungsi changeSlide menormalkan posisinya
+                changeSlide();
+            });
+        });
+
+        // Menangani klik pada menu navigasi bawah yang belum aktif (Coming Soon)
+        const comingSoonToast = document.getElementById('comingSoonToast');
+        const inactiveNavItems = document.querySelectorAll('.bottom-nav .nav-item:not(.active)');
+        let toastTimeout;
+
+        inactiveNavItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Reset timeout jika sudah ada yang berjalan
+                clearTimeout(toastTimeout);
+                
+                comingSoonToast.classList.add('show');
+                
+                toastTimeout = setTimeout(() => {
+                    comingSoonToast.classList.remove('show');
+                }, 2500);
+            });
+        });
+
+        // Load campaign stats dynamically dari MySQL
+        fetch('get-campaign-stats.php')
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success' && res.data) {
+                    res.data.forEach(stat => {
+                        // Cari card berdasarkan parameter href-nya
+                        const cardLink = document.querySelector(`a[href="detail.html?id=${stat.campaignId}"], a[href="detail.html?id=${stat.campaignId}"]`);
+                        if (cardLink) {
+                            const progressBar = cardLink.querySelector('.progress-bar');
+                            const amountSpan = cardLink.querySelector('.stats .amount');
+                            if (progressBar) {
+                                // Jika ada donasi tapi persentasenya sangat kecil, berikan lebar minimal 2% agar bar terlihat
+                                const displayPercentage = stat.totalRaised > 0 ? Math.max(stat.percentage, 2) : 0;
+                                progressBar.style.width = `${displayPercentage}%`;
+                            }
+                            if (amountSpan) {
+                                amountSpan.textContent = `Rp${formatRupiah(stat.totalRaised)}`;
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(err => console.error('Error fetching campaign stats:', err));
+
+        function formatRupiah(angka) {
+            let numberString = angka.toString();
+            let sisa = numberString.length % 3;
+            let rupiah = numberString.substr(0, sisa);
+            let ribuan = numberString.substr(sisa).match(/\d{3}/g);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+            return rupiah;
+        }
+
+        // Fitur Pencarian Real-Time (Client-Side)
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('#fundraiserGrid > a');
+        
+        // Buat element untuk pesan jika hasil pencarian kosong
+        const noResults = document.createElement('div');
+        noResults.id = 'noResultsMessage';
+        noResults.style.display = 'none';
+        noResults.style.width = '100%';
+        noResults.style.textAlign = 'center';
+        noResults.style.padding = '40px 10px';
+        noResults.style.color = '#666666';
+        noResults.style.fontSize = '14px';
+        noResults.textContent = 'Campaign tidak ditemukan. Coba cari kata kunci lain.';
+        fundraiserGrid.appendChild(noResults);
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const org = card.querySelector('.organization').textContent.toLowerCase();
+                
+                if (title.includes(query) || org.includes(query)) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+
+            // Perbarui visibilitas tombol prev/next scroll
+            updateButtons();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informasi Data Diri</title>
+    <meta name="description" content="Lengkapi informasi data diri Anda untuk menyelesaikan penyaluran donasi pembangunan masjid dan program wakaf Alfaruq.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container personal-info-page">
+        
+        <header class="detail-header">
+            <a href="donation-amount.html" class="back-btn" aria-label="Kembali ke Nominal Donasi">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </a>
+            <h1>Pembangunan Masjid dan Pondok Pesantren...</h1>
+        </header>
+ 
+        <main class="detail-content content-padding">
+            
+            <section class="personal-info-section" style="margin-top: 10px;">
+                <h2 class="section-title text-center">Masukkan Informasi Data Diri</h2>
+                
+                <div class="form-group">
+                    <input type="text" id="fullName" class="custom-input" placeholder="Nama Lengkap" aria-label="Nama Lengkap">
+                </div>
+                
+                <label class="checkbox-group">
+                    <input type="checkbox" id="isAnonymous" class="custom-checkbox" aria-label="Donasi sebagai Anonim">
+                    <span class="checkbox-label">Sembunyikan nama saya (donasi sebagai Anonim)</span>
+                </label>
+                
+                <div class="form-group">
+                    <input type="text" id="contactInfo" class="custom-input" placeholder="Nomor Ponsel atau Alamat Email" aria-label="Nomor Ponsel atau Alamat Email">
+                    <p class="help-text">Pastikan email atau nomor ponsel anda sudah benar untuk menerima laporan donasi.</p>
+                </div>
+            </section>
+ 
+            <section class="prayer-support-section" style="margin-top: 40px;">
+                <h2 class="section-title text-center">Sertakan doa dan dukungan (opsional)</h2>
+                
+                <div class="form-group">
+                    <textarea id="prayerText" class="custom-textarea" placeholder="Tulis doa untuk penggalangan dana..." aria-label="Tulis doa untuk penggalangan dana"></textarea>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="detail-footer">
+            <a href="payment.html" id="submitBtn" class="donate-btn">Lanjutkan Pembayaran</a>
+        </footer>
+        
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const campaignId = sessionStorage.getItem('campaign_id') || 'masjid';
+            
+            // Dynamic Header & Back Link
+            const backBtn = document.querySelector('.back-btn');
+            if (backBtn) {
+                backBtn.href = `donation-amount.html`;
+            }
+            const headerTitle = document.querySelector('.detail-header h1');
+            if (headerTitle) {
+                if (campaignId === 'wakaf') {
+                    headerTitle.textContent = "Wakaf alquran, iqra, dirosa, & perlengkapan...";
+                } else {
+                    headerTitle.textContent = "Pembangunan Masjid dan Pondok Pesantren...";
+                }
+            }
+
+            // Sembunyikan/tampilkan input nama jika memilih anonim
+            const isAnonymousCheckbox = document.getElementById('isAnonymous');
+            const fullNameInput = document.getElementById('fullName');
+
+            isAnonymousCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    fullNameInput.value = 'Hamba Allah';
+                    fullNameInput.disabled = true;
+                    fullNameInput.style.opacity = '0.6';
+                } else {
+                    fullNameInput.value = '';
+                    fullNameInput.disabled = false;
+                    fullNameInput.style.opacity = '1';
+                }
+            });
+
+            // Kirim data ke database (json-server)
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+
+                const fullName = fullNameInput.value.trim();
+                const isAnonymous = isAnonymousCheckbox.checked;
+                const contactInfo = document.getElementById('contactInfo').value.trim();
+                const prayerText = document.getElementById('prayerText').value.trim();
+                const amount = sessionStorage.getItem('donation_amount');
+
+                // Validasi sederhana
+                if (!isAnonymous && !fullName) {
+                    alert('Silakan masukkan nama lengkap Anda.');
+                    return;
+                }
+                if (!contactInfo) {
+                    alert('Silakan masukkan nomor ponsel atau alamat email Anda.');
+                    return;
+                }
+
+                // Validasi format kontak (email atau telepon)
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                const phoneRegex = /^(?:\+62|62|0)[0-9]{9,15}$/;
+                if (!emailRegex.test(contactInfo) && !phoneRegex.test(contactInfo)) {
+                    alert('Silakan masukkan nomor ponsel yang valid (contoh: 08123456789) atau alamat email yang benar.');
+                    return;
+                }
+
+                const donationData = {
+                    name: isAnonymous ? 'Hamba Allah' : fullName,
+                    fullName: fullName,
+                    isAnonymous: isAnonymous,
+                    contact: contactInfo,
+                    prayer: prayerText,
+                    amount: parseInt(amount) || 0,
+                    campaignId: campaignId,
+                    createdAt: new Date().toISOString()
+                };
+
+                // Ubah status tombol menjadi loading
+                submitBtn.textContent = 'Memproses...';
+                submitBtn.style.pointerEvents = 'none';
+                submitBtn.style.opacity = '0.7';
+
+                try {
+                    // Mengirim data ke backend PHP
+                    const response = await fetch('save-donation.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(donationData)
+                    });
+
+                    if (response.ok) {
+                        window.location.href = 'payment.html';
+                    } else {
+                        const errorRes = await response.json();
+                        throw new Error(errorRes.message || 'Gagal menyimpan ke database');
+                    }
+                } catch (error) {
+                    console.warn('Gagal menghubungi backend PHP, menyimpan lokal ke sessionStorage:', error);
+                    // Tetap lanjutkan pembayaran & simpan data sementara jika server offline
+                    sessionStorage.setItem('last_donation', JSON.stringify(donationData));
+                    window.location.href = 'payment.html';
+                } finally {
+                    // Kembalikan status tombol jika redirect tidak terpicu
+                    submitBtn.textContent = 'Lanjutkan Pembayaran';
+                    submitBtn.style.pointerEvents = 'auto';
+                    submitBtn.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
