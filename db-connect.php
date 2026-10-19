@@ -1,4 +1,8 @@
 <?php
+// Sembunyikan pesan deprecation agar tidak merusak format response JSON
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+ini_set('display_errors', '0');
+
 // Konfigurasi Database - Mendukung Environment Variables, SQLite (Otomatis/Gratis), & Fallback InfinityFree/Lokal
 $db_driver = getenv('DB_DRIVER') ?: (getenv('DB_HOST') ? 'mysql' : 'sqlite');
 $host     = getenv('DB_HOST')     ?: 'sql110.infinityfree.com';
