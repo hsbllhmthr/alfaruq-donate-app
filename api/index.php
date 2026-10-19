@@ -15,9 +15,17 @@ if ($path === 'admin' || $path === 'admin/') {
     $path = 'admin/index.php';
 }
 
+// Cegah infinite recursion jika mengakses api/index.php langsung
+if ($path === 'api/index.php' || $path === 'api' || empty($path)) {
+    header('Content-Type: application/json');
+    echo json_encode(['status' => 'success', 'message' => 'Alfaruq Donate API Gateway is running.']);
+    exit;
+}
+
 $targetFile = dirname(__DIR__) . '/' . $path;
 
-if (file_exists($targetFile) && is_file($targetFile)) {
+// Jangan jalankan jika targetnya adalah file ini sendiri
+if ($targetFile !== __FILE__ && file_exists($targetFile) && is_file($targetFile)) {
     // Ubah working directory agar require_once relatif berjalan lancar
     chdir(dirname($targetFile));
     require $targetFile;
