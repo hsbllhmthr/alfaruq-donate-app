@@ -1,13 +1,22 @@
 {
+  "version": 2,
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.9.0"
     }
   },
-  "rewrites": [
-    { "source": "/admin", "destination": "/api/index.php" },
-    { "source": "/admin/", "destination": "/api/index.php" },
-    { "source": "/admin/:path*.php", "destination": "/api/index.php" },
-    { "source": "/:file.php", "destination": "/api/index.php" }
+  "routes": [
+    {
+      "src": "/(get-.*\\.php|save-.*\\.php|migrate\\.php|db-connect\\.php)",
+      "dest": "/api/index.php"
+    },
+    {
+      "src": "/admin/(.*\\.php|)",
+      "dest": "/api/index.php"
+    },
+    {
+      "handle": "filesystem"
+    }
   ]
 }
+
